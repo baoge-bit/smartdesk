@@ -1,0 +1,41 @@
+name: Verify Build
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/alphadesk/package-lock.json
+
+      - name: Install and build frontend
+        working-directory: apps/alphadesk
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          npm run build
+
+  engine-import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Verify engine dependencies
+        run: |
+          python -m venv engine/.venv
+          source engine/.venv/bin/activate
+          pip install -r engine/requirements.txt
+          python -c "import fastapi, uvicorn; print('engine deps ok')"

@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+build/
+target/
+apps/alphadesk/dist/
+apps/alphadesk/src-tauri/target/
+engine/dist/
+engine/build/
+*.egg-info/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.local
+
+# Data & logs (local dev)
+data/
+logs/
+*.db
+*.db-wal
+*.db-shm
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Tauri
+apps/alphadesk/src-tauri/WixTools/
+apps/alphadesk/src-tauri/gen/
+
+# Release artifacts
+release/
+*.dmg
+*.msi
+*.exe
+*.AppImage
+*.deb
+
+# Secrets
+*.pem
+*.key
+credentials.json
