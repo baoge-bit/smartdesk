@@ -27,18 +27,22 @@ jobs:
             args: '--target aarch64-apple-darwin'
             sidecar_triple: aarch64-apple-darwin
             python_arch: arm64
+            rust_target: aarch64-apple-darwin
           - platform: macos-latest
             args: '--target x86_64-apple-darwin'
             sidecar_triple: x86_64-apple-darwin
             python_arch: x64
+            rust_target: x86_64-apple-darwin
           - platform: ubuntu-22.04
             args: ''
             sidecar_triple: x86_64-unknown-linux-gnu
             python_arch: x64
+            rust_target: x86_64-unknown-linux-gnu
           - platform: windows-latest
             args: ''
             sidecar_triple: x86_64-pc-windows-msvc
             python_arch: x64
+            rust_target: x86_64-pc-windows-msvc
 
     runs-on: ${{ matrix.platform }}
 
@@ -113,6 +117,17 @@ jobs:
           ls -la apps/alphadesk/src-tauri/binaries/
 
       - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_target }}
+
+      - name: Configure macOS x86_64 cross-linker
+        if: matrix.rust_target == 'x86_64-apple-darwin'
+        shell: bash
+        run: |
+          SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
+          echo "SDKROOT=${SDKROOT}" >> "$GITHUB_ENV"
+          echo "CARGO_TARGET_X86_64_APPLE_DARWIN_LINKER=clang -arch x86_64 -isysroot ${SDKROOT} -Wl,-syslibroot,${SDKROOT}" >> "$GITHUB_ENV"
+          echo "CC_x86_64_apple_darwin=clang -arch x86_64 -isysroot ${SDKROOT}" >> "$GITHUB_ENV"
 
       - uses: swatinem/rust-cache@v2
         with:
