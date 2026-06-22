@@ -38,6 +38,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          cache: pip
+          cache-dependency-path: engine/requirements.txt
 
       - name: Install system deps (Linux)
         if: matrix.platform == 'ubuntu-22.04'
@@ -46,19 +48,31 @@ jobs:
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
       - name: Setup engine
+        shell: bash
         run: |
           python -m venv engine/.venv
           source engine/.venv/bin/activate
           pip install -r engine/requirements.txt pyinstaller
-          pyinstaller engine/alphadesk-engine.spec --noconfirm
+          pyinstaller engine/alphadesk-engine.spec --noconfirm --clean
 
       - name: Copy sidecar binary
         shell: bash
         run: |
           mkdir -p apps/alphadesk/src-tauri/binaries
-          cp engine/dist/alphadesk-engine* apps/alphadesk/src-tauri/binaries/ || cp engine/dist/alphadesk-engine.exe apps/alphadesk/src-tauri/binaries/
+          if compgen -G "engine/dist/alphadesk-engine*" > /dev/null; then
+            cp engine/dist/alphadesk-engine* apps/alphadesk/src-tauri/binaries/
+          else
+            echo "PyInstaller output missing under engine/dist/" >&2
+            ls -la engine/dist/ >&2 || true
+            exit 1
+          fi
+          ls -la apps/alphadesk/src-tauri/binaries/
 
       - uses: dtolnay/rust-toolchain@stable
+
+      - uses: swatinem/rust-cache@v2
+        with:
+          workspaces: apps/alphadesk/src-tauri
 
       - name: Install frontend deps
         working-directory: apps/alphadesk

@@ -27,6 +27,17 @@ git remote add origin https://github.com/baoge-bit/smartdesk.git
 git push -u origin main
 ```
 
+### GitHub Personal Access Token（HTTPS 推送时）
+
+若使用 PAT 代替 SSH 推送代码或标签，Token 至少需要：
+
+| Scope | 用途 |
+|-------|------|
+| `repo` | 推送 `main`、创建 Release |
+| `workflow` | 触发/更新 `.github/workflows/` 中的 CI |
+
+> Fine-grained PAT：需对该仓库授予 Contents（Read and write）与 Actions（Read and write）权限。
+
 ## 3. 配置 GitHub Secrets
 
 仓库 **Settings → Secrets and variables → Actions**：

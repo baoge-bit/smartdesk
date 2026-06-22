@@ -62,6 +62,17 @@ git tag v1.0.0
 git push origin v1.0.0
 ```
 
+### GitHub Personal Access Token scopes
+
+When pushing tags or `main` over HTTPS with a PAT (not SSH), the token must include:
+
+| Scope | Why |
+|-------|-----|
+| `repo` | Push commits and create GitHub Releases |
+| `workflow` | Trigger and update GitHub Actions workflows |
+
+For fine-grained tokens: grant **Contents** (Read and write) and **Actions** (Read and write) on `baoge-bit/smartdesk`.
+
 First release walkthrough: [FIRST_RELEASE.md](FIRST_RELEASE.md).
 
 This triggers [`.github/workflows/release.yml`](../.github/workflows/release.yml), which:

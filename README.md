@@ -9,6 +9,19 @@ AlphaDesk 将开源项目 [daily_stock_analysis](https://github.com/ZhuLinsen/da
 
 ---
 
+## Demo / Screenshots
+
+<p align="center">
+  <img src="docs/assets/readme_workspace_tour_20260510.gif" alt="AlphaDesk workspace tour" width="720"/>
+</p>
+
+<p align="center">
+  <em>Workspace tour — 工作台导览（当前为上游引擎演示素材，AlphaDesk 专属截图将陆续替换）</em><br/>
+  <em>Workspace tour — sourced from upstream engine demo; AlphaDesk-specific screenshots coming soon.</em>
+</p>
+
+---
+
 ## Architecture
 
 ```
@@ -55,7 +68,7 @@ SQLite + 系统密钥链（设置、历史、API Key）
 | Light / Dark themes | 浅色 / 深色主题 | ✅ |
 | Bilingual UI (zh/en) | 中英双语 | ✅ |
 | Legal disclaimers | 风险提示 | ✅ |
-| Auto-update (Tauri) | 自动更新（启动检查 + 设置页 + 托盘） | ✅ |
+| Auto-update (Tauri) | 自动更新（启动检查 + 设置页 + 托盘） | ✅（基础实现） |
 
 > **风险提示（分析界面均会展示）：**  
 > 本工具仅提供辅助分析，不构成投资建议。市场有风险，投资需谨慎。  
@@ -71,6 +84,9 @@ SQLite + 系统密钥链（设置、历史、API Key）
 | Rust | stable（桌面版需要） |
 | Python | ≥ 3.10 |
 | 平台依赖 | 见 [Tauri 环境要求](https://v2.tauri.app/start/prerequisites/) |
+
+> **性能提示 / Performance:** 完整桌面版包含 Python sidecar + LLM，推荐至少 **8GB 内存**；本地使用 Ollama 时 CPU/GPU 与内存占用较高。  
+> The full desktop app bundles a Python sidecar and LLM workloads — **8GB RAM** minimum recommended; local Ollama usage can be resource-intensive.
 
 **离线模式（推荐本地开发）：** 安装 [Ollama](https://ollama.com/) 及中文模型（如 `qwen2.5:14b`）。
 
@@ -156,12 +172,22 @@ npm run tauri:build
 | Windows | `.msi` / `.exe` | 运行安装程序，从开始菜单启动 **AlphaDesk** |
 | Linux | `.AppImage` / `.deb` | 双击 AppImage，或通过包管理器安装 `.deb` |
 
-### 4. 首次使用
+### 4. First Run / 首次使用
 
-1. 完成**入门向导**（配置 LLM、导入自选股、选择默认策略）
-2. 在左侧**自选股**面板添加或选择股票
-3. 中间**工作台**查看看板与 K 线，点击「一键分析」生成报告
-4. 通过侧边栏访问：策略问股、历史报告、回测、持仓、决策信号、设置
+首次启动桌面版或浏览器开发模式后，建议按以下流程操作：
+
+1. **入门向导** — 检查引擎状态 → 测试 LLM 连通性 → 导入/添加自选股 → 选择默认策略  
+   **Onboarding wizard** — engine health → LLM test → watchlist → default strategy
+2. **配置 LLM** — 在向导或 **设置** 中完成 Ollama / 云端 API 配置（本地开发推荐 Ollama）  
+   Configure Ollama or a cloud API in the wizard or **Settings**
+3. **导入自选股** — 左侧看板支持代码、拼音补全与批量导入  
+   Add symbols via autocomplete, pinyin search, or batch import
+4. **生成首份报告** — 在工作台选择股票，点击「一键分析」  
+   Select a symbol on the workspace and run one-click analysis
+5. **探索其他模块** — 策略问股、历史报告（对比/重分析）、回测、持仓、决策信号、导出  
+   Explore chat, reports, backtest, portfolio, decision signals, and export
+
+> 关闭桌面窗口后应用会保留在系统托盘，可从托盘快速分析或重新打开工作台。
 
 ---
 
@@ -208,10 +234,20 @@ Release signing and publishing: [docs/RELEASE.md](docs/RELEASE.md).
 
 推送标签 `v1.0.0` 触发 [`.github/workflows/release.yml`](.github/workflows/release.yml)。
 
+**本地推送标签时**，若使用 GitHub Personal Access Token（HTTPS 认证），Token 至少需要以下 scopes：
+
+| Scope | 用途 |
+|-------|------|
+| `repo` | 推送代码与创建 Release |
+| `workflow` | 触发并更新 GitHub Actions workflow 文件 |
+
 **签名更新所需 Secrets：**
 
 - `TAURI_SIGNING_PRIVATE_KEY`
 - `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`
+- `TAURI_SIGNING_PUBLIC_KEY`（注入到 `tauri.conf.json`）
+
+详见 [docs/RELEASE.md](docs/RELEASE.md) 与 [docs/FIRST_RELEASE.md](docs/FIRST_RELEASE.md)。
 
 ---
 
@@ -281,6 +317,38 @@ git fetch upstream && git merge upstream/main
 ```
 
 或直接复制：`rsync -a --exclude='.git' upstream_repo/ engine/`
+
+---
+
+## Roadmap / Known Limitations
+
+### 当前状态 / Current status
+
+核心功能（自选股、AI 看板、策略问股、历史报告、回测、持仓、设置、托盘、命令面板、入门向导）已可用。  
+Auto-update 为**基础实现**（启动检查、设置页、托盘入口；需配置 Tauri 签名密钥后才能在生产环境完整生效）。
+
+Core features are implemented. Auto-update is at a **basic** level (startup check, settings, tray) and requires Tauri signing secrets for full production use.
+
+### 已知限制 / Known limitations
+
+| 限制 | 说明 |
+|------|------|
+| 本地 LLM | Ollama 等本地模型对 CPU/GPU 与内存要求较高，低配机器分析可能较慢 |
+| 构建复杂度 | 完整构建需 Node.js + Rust + Python；CI 使用 PyInstaller 打包 sidecar |
+| 数据源 | 部分行情源可能限流或需第三方 Token（Tushare、Longbridge 等） |
+| License Key | 当前为 Premium 功能占位，非完整商业化授权系统 |
+| 云同步 | 暂无跨设备同步；数据默认存于本机 SQLite |
+
+### 计划中 / Planned
+
+- 更完善的 **License Key** 与功能门控体系
+- **云同步**（设置、自选股、报告摘要）
+- **移动端伴侣**（只读看板 / 推送通知）
+- AlphaDesk 专属截图与演示素材
+- 更丰富的自动更新策略（增量包、回滚提示）
+
+欢迎通过 [Issues](https://github.com/baoge-bit/smartdesk/issues) 讨论优先级与需求。  
+Contributions welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
