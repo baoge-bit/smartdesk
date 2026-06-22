@@ -16,8 +16,8 @@ AlphaDesk 将开源项目 [daily_stock_analysis](https://github.com/ZhuLinsen/da
 </p>
 
 <p align="center">
-  <em>Workspace tour — 工作台导览（当前为上游引擎演示素材，AlphaDesk 专属截图将陆续替换）</em><br/>
-  <em>Workspace tour — sourced from upstream engine demo; AlphaDesk-specific screenshots coming soon.</em>
+  <em>当前使用上游演示 GIF，后续将替换为 AlphaDesk 实际界面截图。</em><br/>
+  <em>Upstream demo GIF for now — AlphaDesk-specific screenshots coming soon.</em>
 </p>
 
 ---
@@ -174,20 +174,18 @@ npm run tauri:build
 
 ### 4. First Run / 首次使用
 
-首次启动桌面版或浏览器开发模式后，建议按以下流程操作：
+首次启动后，按顺序完成以下 5 步即可上手（桌面版会自动弹出**入门向导**，浏览器模式可从设置页进入）：
 
-1. **入门向导** — 检查引擎状态 → 测试 LLM 连通性 → 导入/添加自选股 → 选择默认策略  
-   **Onboarding wizard** — engine health → LLM test → watchlist → default strategy
-2. **配置 LLM** — 在向导或 **设置** 中完成 Ollama / 云端 API 配置（本地开发推荐 Ollama）  
-   Configure Ollama or a cloud API in the wizard or **Settings**
-3. **导入自选股** — 左侧看板支持代码、拼音补全与批量导入  
-   Add symbols via autocomplete, pinyin search, or batch import
-4. **生成首份报告** — 在工作台选择股票，点击「一键分析」  
-   Select a symbol on the workspace and run one-click analysis
-5. **探索其他模块** — 策略问股、历史报告（对比/重分析）、回测、持仓、决策信号、导出  
-   Explore chat, reports, backtest, portfolio, decision signals, and export
+| 步骤 | 操作 | 说明 |
+|------|------|------|
+| 1 | **检查引擎** | 向导首页确认 Python sidecar 已连接（绿点 = 正常） |
+| 2 | **测试 LLM** | 在向导中发送测试请求；本地开发推荐 Ollama（`qwen2.5:14b`） |
+| 3 | **添加自选股** | 输入代码或拼音补全，也可批量导入；至少添加 1 只用于试跑 |
+| 4 | **一键分析** | 在工作台选中股票 → 点击「一键分析」→ 等待首份 AI 报告（首次可能 1–3 分钟） |
+| 5 | **探索模块** | 策略问股、历史报告、回测、持仓、决策信号、导出（PDF/MD/PNG） |
 
-> 关闭桌面窗口后应用会保留在系统托盘，可从托盘快速分析或重新打开工作台。
+> **提示：** 关闭桌面窗口后应用保留在系统托盘，可快速分析或重新打开工作台。  
+> **Tip:** The app stays in the system tray after closing the window — use it for quick analysis or reopening the workspace.
 
 ---
 
@@ -234,12 +232,16 @@ Release signing and publishing: [docs/RELEASE.md](docs/RELEASE.md).
 
 推送标签 `v1.0.0` 触发 [`.github/workflows/release.yml`](.github/workflows/release.yml)。
 
-**本地推送标签时**，若使用 GitHub Personal Access Token（HTTPS 认证），Token 至少需要以下 scopes：
-
-| Scope | 用途 |
-|-------|------|
-| `repo` | 推送代码与创建 Release |
-| `workflow` | 触发并更新 GitHub Actions workflow 文件 |
+> **⚠️ GitHub PAT 权限（HTTPS 推送必看）**  
+> 使用 Personal Access Token 推送 `main` 或标签时，**必须**包含以下 scopes，否则推送或 CI 触发会失败：
+>
+> | Scope | 用途 |
+> |-------|------|
+> | **`repo`** | 推送代码、创建 GitHub Release |
+> | **`workflow`** | 触发并更新 `.github/workflows/` 中的 Actions |
+>
+> Fine-grained PAT：需对该仓库授予 **Contents**（Read and write）+ **Actions**（Read and write）。  
+> SSH 推送不受此限制。
 
 **签名更新所需 Secrets：**
 
@@ -277,6 +279,15 @@ smartdesk/
 1. 手动测试：`source engine/.venv/bin/activate && python engine/alphadesk_entry.py --port 18765`
 2. 查看日志：`data/logs/`
 3. 确认端口未被占用：`lsof -i :18765`
+
+### 性能与资源占用
+
+| 现象 | 处理 |
+|------|------|
+| 分析很慢（>3 分钟） | 换更小模型（如 `qwen2.5:7b`）、减少自选股、关闭其他占内存应用 |
+| Ollama 内存不足 | 使用量化模型；推荐机器 **≥8GB RAM**（14B 模型建议 16GB+） |
+| CPU/GPU 满载 | 本地 LLM 推理属正常；可改用云端 API（DeepSeek 等）降低本机负载 |
+| 首次分析特别慢 | 模型冷启动 + 数据拉取；第二次通常会快很多 |
 
 ### LLM 相关错误
 
