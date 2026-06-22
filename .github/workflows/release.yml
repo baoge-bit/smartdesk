@@ -81,11 +81,14 @@ jobs:
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
       - name: Inject updater public key
-        if: ${{ secrets.TAURI_SIGNING_PUBLIC_KEY != '' }}
         working-directory: apps/alphadesk
         env:
           TAURI_SIGNING_PUBLIC_KEY: ${{ secrets.TAURI_SIGNING_PUBLIC_KEY }}
         run: |
+          if [ -z "${TAURI_SIGNING_PUBLIC_KEY:-}" ]; then
+            echo "No TAURI_SIGNING_PUBLIC_KEY secret — skipping pubkey injection"
+            exit 0
+          fi
           node <<'NODE'
           const fs = require('fs');
           const path = 'src-tauri/tauri.conf.json';
