@@ -29,3 +29,7 @@ Bundled Python sidecar based on [daily_stock_analysis](https://github.com/ZhuLin
 ### Checksum
 
 Verify downloads using the `.sig` files attached to this release (Tauri updater).
+
+### Changelog
+
+See [CHANGELOG.md](https://github.com/baoge-bit/smartdesk/blob/main/CHANGELOG.md#100---2026-06-22).

@@ -20,6 +20,25 @@ AlphaDesk 将开源项目 [daily_stock_analysis](https://github.com/ZhuLinsen/da
   <em>Upstream demo GIF for now — AlphaDesk-specific screenshots coming soon.</em>
 </p>
 
+**计划替换的截图清单 / Planned screenshot set**（建议 1280×800 PNG，浅色 + 深色主题各一套）：
+
+| # | 页面 / Page | 文件名建议 | 展示要点 |
+|---|-------------|------------|----------|
+| 1 | 工作台总览 | `workspace_light.png` / `workspace_dark.png` | 自选股 + AI 看板 + K 线多面板布局 |
+| 2 | 入门向导 | `onboarding.png` | 引擎状态、LLM 测试、自选股导入 |
+| 3 | 策略问股 | `strategy_chat.png` | SSE 流式回复 + 策略选择 |
+| 4 | 历史报告 | `reports.png` | 报告列表、对比视图、导出菜单 |
+| 5 | 设置页 | `settings.png` | Schema 驱动配置、LLM 连通性测试 |
+
+**替换步骤 / How to replace the GIF：**
+
+1. 在本地运行 `./scripts/dev.sh` 或 `npm run tauri:dev`，完成首次分析以展示真实数据
+2. 按上表截取截图，保存到 `docs/assets/screenshots/`
+3. 将 README 中 GIF 替换为静态图或自录 GIF（推荐先用 1–2 张主界面静态图）
+4. 更新 [CHANGELOG.md](CHANGELOG.md) `[Unreleased]` 并提交 PR
+
+> 素材规范：去除敏感 API Key；股票代码可用演示数据（如 `600519`、`AAPL`）。
+
 ---
 
 ## Architecture
