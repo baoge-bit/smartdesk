@@ -32,9 +32,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          # Re-enable cache after committing apps/alphadesk/package-lock.json:
-          # cache: npm
-          # cache-dependency-path: apps/alphadesk/package-lock.json
+          cache: npm
+          cache-dependency-path: apps/alphadesk/package-lock.json
 
       - uses: actions/setup-python@v5
         with:
@@ -77,8 +76,7 @@ jobs:
 
       - name: Install frontend deps
         working-directory: apps/alphadesk
-        run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+        run: npm ci
 
       - name: Inject updater public key
         working-directory: apps/alphadesk

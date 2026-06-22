@@ -1,9 +1,9 @@
 import { Badge } from '@/components/ui/badge';
-import { useI18n } from '@/i18n';
+import { useI18n, type Translate, type TranslationKey } from '@/i18n';
 import { getActionLabel, getActionTone } from '@/lib/decisionAction';
 import type { DecisionSignalHorizon, DecisionSignalItem } from '@/types/decisionSignals';
 
-const HORIZON_KEYS: Record<DecisionSignalHorizon, string> = {
+const HORIZON_KEYS: Record<DecisionSignalHorizon, TranslationKey> = {
   intraday: 'decisionSignals.horizon.intraday',
   '1d': 'decisionSignals.horizon.1d',
   '3d': 'decisionSignals.horizon.3d',
@@ -13,7 +13,7 @@ const HORIZON_KEYS: Record<DecisionSignalHorizon, string> = {
   long: 'decisionSignals.horizon.long',
 };
 
-function horizonLabel(horizon: DecisionSignalHorizon, t: (key: string) => string): string {
+function horizonLabel(horizon: DecisionSignalHorizon, t: Translate): string {
   const key = HORIZON_KEYS[horizon];
   return key ? t(key) : horizon;
 }

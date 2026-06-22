@@ -7,6 +7,7 @@ dist/
 build/
 target/
 apps/alphadesk/dist/
+*.tsbuildinfo
 apps/alphadesk/src-tauri/target/
 engine/dist/
 engine/build/

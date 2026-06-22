@@ -9,7 +9,7 @@ import { ReportMarkdown } from '@/components/reports/ReportMarkdown';
 import { DisclaimerBanner } from '@/components/workspace/DisclaimerBanner';
 import { agentApi, type ChatSessionItem, type StrategyInfo } from '@/api/agent';
 import { consumeAgentStream, type AgentStreamEvent } from '@/lib/agentStream';
-import { useI18n } from '@/i18n';
+import { useI18n, type Translate } from '@/i18n';
 import { useWorkspaceStore } from '@/stores/workspace';
 import { cn } from '@/lib/utils';
 
@@ -18,7 +18,7 @@ interface Message {
   content: string;
 }
 
-function progressLabel(event: AgentStreamEvent, t: (k: string) => string): string {
+function progressLabel(event: AgentStreamEvent, t: Translate): string {
   if (event.display_name) return event.display_name;
   if (event.tool) return event.tool;
   switch (event.type) {

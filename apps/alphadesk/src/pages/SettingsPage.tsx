@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DisclaimerBanner } from '@/components/workspace/DisclaimerBanner';
 import { systemApi } from '@/api/system';
-import { useI18n } from '@/i18n';
+import { useI18n, type Translate, type TranslationKey } from '@/i18n';
 import { APP_NAME_EN, APP_NAME_ZH } from '@/lib/constants';
 import type {
   SystemConfigCategory,
@@ -38,7 +38,7 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
   backtest: LineChart,
 };
 
-const CATEGORY_I18N: Record<SystemConfigCategory, string> = {
+const CATEGORY_I18N: Record<SystemConfigCategory, TranslationKey> = {
   base: 'settings.cat.base',
   ai_model: 'settings.cat.aiModel',
   data_source: 'settings.cat.dataSource',
@@ -63,7 +63,7 @@ const HIDDEN_KEYS = new Set([
 function categoryTitle(
   category: SystemConfigCategorySchema | undefined,
   categoryKey: SystemConfigCategory,
-  t: (key: string) => string,
+  t: Translate,
 ): string {
   if (categoryKey in CATEGORY_I18N) return t(CATEGORY_I18N[categoryKey]);
   return category?.title ?? categoryKey;

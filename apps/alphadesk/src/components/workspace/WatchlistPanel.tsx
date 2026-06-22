@@ -3,7 +3,6 @@ import { Plus, Trash2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { StockAutocomplete } from '@/components/stock/StockAutocomplete';
-import { SmartImport } from '@/components/workspace/SmartImport';
 import { useI18n } from '@/i18n';
 import { useWorkspaceStore } from '@/stores/workspace';
 import { stocksApi } from '@/api/stocks';
@@ -30,7 +29,6 @@ export function WatchlistPanel() {
     removeFromWatchlist,
   } = useWorkspaceStore();
   const [input, setInput] = useState('');
-  const importOpen = useWorkspaceStore((s) => s.smartImportOpen);
   const setImportOpen = useWorkspaceStore((s) => s.setSmartImportOpen);
   const [panelDragging, setPanelDragging] = useState(false);
 

@@ -1,4 +1,5 @@
 import type { DecisionSignalAction } from '@/types/decisionSignals';
+import type { Translate, TranslationKey } from '@/i18n';
 
 export type ActionTone = 'success' | 'warning' | 'danger' | 'default';
 
@@ -18,7 +19,7 @@ export function getActionTone(action?: DecisionSignalAction | null): ActionTone 
   return ACTION_TONES[action] ?? 'default';
 }
 
-const ACTION_KEYS: Record<DecisionSignalAction, string> = {
+const ACTION_KEYS: Record<DecisionSignalAction, TranslationKey> = {
   buy: 'decisionSignals.action.buy',
   add: 'decisionSignals.action.add',
   hold: 'decisionSignals.action.hold',
@@ -32,7 +33,7 @@ const ACTION_KEYS: Record<DecisionSignalAction, string> = {
 export function getActionLabel(
   action?: DecisionSignalAction | null,
   actionLabel?: string | null,
-  t?: (key: string) => string,
+  t?: Translate,
 ): string {
   if (actionLabel?.trim()) return actionLabel.trim();
   if (!action) return '—';

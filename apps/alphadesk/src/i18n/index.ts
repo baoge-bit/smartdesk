@@ -3,7 +3,11 @@ import { persist } from 'zustand/middleware';
 
 export type UiLanguage = 'zh' | 'en';
 
-type TranslationKey = keyof typeof translations.zh;
+export type TranslationKey = keyof typeof translations.zh;
+export type Translate = (
+  key: TranslationKey,
+  vars?: Record<string, string | number>,
+) => string;
 
 const translations = {
   zh: {
@@ -869,7 +873,7 @@ const translations = {
 interface I18nState {
   language: UiLanguage;
   setLanguage: (lang: UiLanguage) => void;
-  t: (key: TranslationKey, vars?: Record<string, string | number>) => string;
+  t: Translate;
 }
 
 export const useI18n = create<I18nState>()(

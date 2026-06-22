@@ -239,7 +239,7 @@ function ListCard({
 }) {
   const { t } = useI18n();
   return (
-    <Card>
+    <Card className={cn(variant === 'warning' && 'border-warning/40')}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           {icon}

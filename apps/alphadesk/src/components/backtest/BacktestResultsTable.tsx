@@ -1,7 +1,7 @@
 import { Check, Minus, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Pagination } from '@/components/common/Pagination';
-import { useI18n } from '@/i18n';
+import { useI18n, type Translate } from '@/i18n';
 import { formatPercent } from '@/lib/utils';
 import type { BacktestPhaseFilter, BacktestResultItem } from '@/types/backtest';
 
@@ -10,7 +10,7 @@ function pct(value?: number | null): string {
   return formatPercent(value, 1).replace('+', '');
 }
 
-function outcomeBadge(outcome: string | undefined, t: (k: string) => string) {
+function outcomeBadge(outcome: string | undefined, t: Translate) {
   if (!outcome) return <Badge variant="outline">—</Badge>;
   switch (outcome) {
     case 'win':
@@ -24,7 +24,7 @@ function outcomeBadge(outcome: string | undefined, t: (k: string) => string) {
   }
 }
 
-function statusBadge(status: string, t: (k: string) => string) {
+function statusBadge(status: string, t: Translate) {
   switch (status) {
     case 'completed':
       return <Badge variant="success">{t('backtest.statusCompleted')}</Badge>;
@@ -38,7 +38,7 @@ function statusBadge(status: string, t: (k: string) => string) {
   }
 }
 
-function movementBadge(movement: string | null | undefined, t: (k: string) => string) {
+function movementBadge(movement: string | null | undefined, t: Translate) {
   switch (movement) {
     case 'up':
       return <Badge variant="success">{t('backtest.movementUp')}</Badge>;
@@ -57,7 +57,7 @@ function boolIcon(value: boolean | null | undefined) {
   return <Minus className="h-3.5 w-3.5 text-muted-foreground" />;
 }
 
-function phaseLabel(phase: string | null | undefined, t: (k: string) => string): string {
+function phaseLabel(phase: string | null | undefined, t: Translate): string {
   switch (phase) {
     case 'premarket':
       return t('backtest.phasePremarket');

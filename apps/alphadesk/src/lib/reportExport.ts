@@ -39,6 +39,7 @@ export function printHtmlToPdf(html: string, title = 'AlphaDesk Report') {
   doc.open();
   doc.write(html);
   doc.close();
+  doc.title = title;
   iframe.contentWindow?.focus();
   iframe.contentWindow?.print();
 
