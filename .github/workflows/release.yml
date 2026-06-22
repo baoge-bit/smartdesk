@@ -49,23 +49,50 @@ jobs:
 
       - name: Setup engine
         shell: bash
+        working-directory: engine
         run: |
-          python -m venv engine/.venv
-          source engine/.venv/bin/activate
-          pip install -r engine/requirements.txt pyinstaller
-          pyinstaller engine/alphadesk-engine.spec --noconfirm --clean
+          python -m venv .venv
+          if [ -f .venv/Scripts/activate ]; then
+            source .venv/Scripts/activate
+          else
+            source .venv/bin/activate
+          fi
+          pip install -r requirements.txt pyinstaller
+          pyinstaller alphadesk-engine.spec --noconfirm --clean
 
       - name: Copy sidecar binary
         shell: bash
         run: |
           mkdir -p apps/alphadesk/src-tauri/binaries
-          if compgen -G "engine/dist/alphadesk-engine*" > /dev/null; then
-            cp engine/dist/alphadesk-engine* apps/alphadesk/src-tauri/binaries/
-          else
+          shopt -s nullglob
+          bins=(engine/dist/alphadesk-engine*)
+          if [ ${#bins[@]} -eq 0 ]; then
             echo "PyInstaller output missing under engine/dist/" >&2
             ls -la engine/dist/ >&2 || true
             exit 1
           fi
+          case "${{ matrix.platform }}" in
+            macos-latest)
+              if [[ "${{ matrix.args }}" == *"aarch64"* ]]; then
+                triple="aarch64-apple-darwin"
+              else
+                triple="x86_64-apple-darwin"
+              fi
+              dest="apps/alphadesk/src-tauri/binaries/alphadesk-engine-${triple}"
+              ;;
+            ubuntu-22.04)
+              dest="apps/alphadesk/src-tauri/binaries/alphadesk-engine-x86_64-unknown-linux-gnu"
+              ;;
+            windows-latest)
+              dest="apps/alphadesk/src-tauri/binaries/alphadesk-engine-x86_64-pc-windows-msvc.exe"
+              ;;
+            *)
+              echo "Unknown platform: ${{ matrix.platform }}" >&2
+              exit 1
+              ;;
+          esac
+          cp "${bins[0]}" "$dest"
+          chmod +x "$dest" 2>/dev/null || true
           ls -la apps/alphadesk/src-tauri/binaries/
 
       - uses: dtolnay/rust-toolchain@stable
