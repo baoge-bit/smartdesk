@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Rust `Emitter` trait imports for Tauri v2 tray and engine-ready events
+- Release CI: Windows bash steps, per-architecture PyInstaller sidecar builds, exclude `longbridge` from bundle deps
+- Committed `Cargo.lock` for reproducible Rust dependency resolution in releases
+
 ### Planned
 
 - Replace upstream demo GIF with AlphaDesk-specific screenshots

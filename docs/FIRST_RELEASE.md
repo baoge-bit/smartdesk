@@ -56,6 +56,9 @@ git push -u origin main
 ./scripts/release.sh v1.0.0
 ```
 
+**重新触发 Release（不移动标签）：**  
+GitHub → Actions → **Release AlphaDesk** → **Run workflow** → 选择分支 `main` 或标签 `v1.0.0`。
+
 或手动：
 
 ```bash

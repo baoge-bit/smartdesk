@@ -4,7 +4,7 @@ mod sidecar;
 mod tray;
 
 use sidecar::{pick_port, resolve_data_dir, spawn_engine, stop_engine, wait_for_health, SidecarState};
-use tauri::Manager;
+use tauri::{Emitter, Manager};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

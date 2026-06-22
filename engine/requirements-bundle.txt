@@ -1,0 +1,72 @@
+# ===================================
+# AlphaDesk PyInstaller bundle dependencies
+# ===================================
+#
+# Subset of requirements.txt for desktop sidecar packaging in CI.
+# Excludes packages that require native Rust compilation and fail on
+# headless Linux runners (e.g. longbridge). Longbridge remains optional
+# at runtime — other data sources (yfinance, akshare, etc.) still work.
+#
+# Full engine dev install: pip install -r requirements.txt
+
+# Core dependencies
+python-dotenv>=1.0.0
+tenacity>=8.2.0
+sqlalchemy>=2.0.0
+schedule>=1.2.0
+exchange-calendars>=4.13.0
+
+# Data source dependencies
+efinance>=0.5.5
+akshare>=1.12.0
+tushare>=1.4.0
+pytdx>=1.72
+baostock>=0.8.0
+yfinance>=0.2.0
+# longbridge>=0.2.77  # excluded: Rust wheel; optional US/HK fallback
+tickflow>=0.1.0
+git+https://github.com/ZhuLinsen/alphasift.git@377049857cc04175dc3cca62121ee41adec6cdb8#egg=alphasift
+
+# Feishu
+lark-oapi>=1.0.0
+
+# Data processing
+pandas>=2.0.0
+pypinyin>=0.50.0
+openpyxl>=3.1.0
+numpy>=1.24.0
+json-repair>=0.55.1
+
+# AI analysis
+litellm>=1.80.10,!=1.82.7,!=1.82.8,<2.0.0
+tiktoken>=0.8.0,<0.12.0
+openai>=1.0.0
+PyYAML>=6.0
+
+# Search engines
+tavily-python>=0.3.0
+google-search-results>=2.4.0
+
+# Network requests
+requests>=2.31.0
+markdown2>=2.4.0
+imgkit>=1.2.0
+fake-useragent>=1.4.0
+httpx[socks]
+dingtalk-stream >= 0.24.3
+
+# Discord bot
+discord.py>=2.0.0
+PyNaCl>=1.5.0
+
+# Web Content Extraction
+newspaper3k>=0.2.8
+lxml_html_clean
+
+# Report template engine
+jinja2>=3.1.0
+
+# FastAPI Web framework
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.6

@@ -17,12 +17,20 @@ jobs:
         include:
           - platform: macos-latest
             args: '--target aarch64-apple-darwin'
+            sidecar_triple: aarch64-apple-darwin
+            sidecar_arch: native
           - platform: macos-latest
             args: '--target x86_64-apple-darwin'
+            sidecar_triple: x86_64-apple-darwin
+            sidecar_arch: x86_64
           - platform: ubuntu-22.04
             args: ''
+            sidecar_triple: x86_64-unknown-linux-gnu
+            sidecar_arch: native
           - platform: windows-latest
             args: ''
+            sidecar_triple: x86_64-pc-windows-msvc
+            sidecar_arch: native
 
     runs-on: ${{ matrix.platform }}
 
@@ -39,10 +47,11 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
-          cache-dependency-path: engine/requirements.txt
+          cache-dependency-path: engine/requirements-bundle.txt
 
       - name: Install system deps (Linux)
         if: matrix.platform == 'ubuntu-22.04'
+        shell: bash
         run: |
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
@@ -50,19 +59,35 @@ jobs:
       - name: Setup engine
         shell: bash
         working-directory: engine
+        env:
+          SIDECAR_ARCH: ${{ matrix.sidecar_arch }}
         run: |
-          python -m venv .venv
+          set -euo pipefail
+          ARCH_PREFIX=""
+          if [ "$SIDECAR_ARCH" = "x86_64" ] && [ "$(uname -m)" = "arm64" ]; then
+            echo "Building x86_64 sidecar via Rosetta on Apple Silicon runner"
+            ARCH_PREFIX="arch -x86_64"
+          fi
+
+          $ARCH_PREFIX python -m venv .venv
           if [ -f .venv/Scripts/activate ]; then
             source .venv/Scripts/activate
           else
             source .venv/bin/activate
           fi
-          pip install -r requirements.txt pyinstaller
-          pyinstaller alphadesk-engine.spec --noconfirm --clean
+
+          pip install -r requirements-bundle.txt pyinstaller
+          $ARCH_PREFIX pyinstaller alphadesk-engine.spec --noconfirm --clean
+
+          echo "Sidecar binary arch:"
+          file dist/alphadesk-engine* || true
 
       - name: Copy sidecar binary
         shell: bash
+        env:
+          SIDECAR_TRIPLE: ${{ matrix.sidecar_triple }}
         run: |
+          set -euo pipefail
           mkdir -p apps/alphadesk/src-tauri/binaries
           shopt -s nullglob
           bins=(engine/dist/alphadesk-engine*)
@@ -71,28 +96,17 @@ jobs:
             ls -la engine/dist/ >&2 || true
             exit 1
           fi
-          case "${{ matrix.platform }}" in
-            macos-latest)
-              if [[ "${{ matrix.args }}" == *"aarch64"* ]]; then
-                triple="aarch64-apple-darwin"
-              else
-                triple="x86_64-apple-darwin"
-              fi
-              dest="apps/alphadesk/src-tauri/binaries/alphadesk-engine-${triple}"
-              ;;
-            ubuntu-22.04)
-              dest="apps/alphadesk/src-tauri/binaries/alphadesk-engine-x86_64-unknown-linux-gnu"
-              ;;
-            windows-latest)
-              dest="apps/alphadesk/src-tauri/binaries/alphadesk-engine-x86_64-pc-windows-msvc.exe"
-              ;;
-            *)
-              echo "Unknown platform: ${{ matrix.platform }}" >&2
-              exit 1
-              ;;
-          esac
+
+          if [[ "$SIDECAR_TRIPLE" == *"windows"* ]]; then
+            dest="apps/alphadesk/src-tauri/binaries/alphadesk-engine-${SIDECAR_TRIPLE}.exe"
+          else
+            dest="apps/alphadesk/src-tauri/binaries/alphadesk-engine-${SIDECAR_TRIPLE}"
+          fi
+
           cp "${bins[0]}" "$dest"
           chmod +x "$dest" 2>/dev/null || true
+          echo "Copied sidecar to $dest"
+          file "$dest" || true
           ls -la apps/alphadesk/src-tauri/binaries/
 
       - uses: dtolnay/rust-toolchain@stable
@@ -102,10 +116,12 @@ jobs:
           workspaces: apps/alphadesk/src-tauri
 
       - name: Install frontend deps
+        shell: bash
         working-directory: apps/alphadesk
         run: npm ci
 
       - name: Inject updater public key
+        shell: bash
         working-directory: apps/alphadesk
         env:
           TAURI_SIGNING_PUBLIC_KEY: ${{ secrets.TAURI_SIGNING_PUBLIC_KEY }}
@@ -124,6 +140,7 @@ jobs:
 
       - name: Prepare release notes
         id: notes
+        shell: bash
         run: |
           BODY=$(sed "s/{{tag}}/${{ github.ref_name }}/g" .github/release-template.md)
           echo "body<<EOF" >> "$GITHUB_OUTPUT"
