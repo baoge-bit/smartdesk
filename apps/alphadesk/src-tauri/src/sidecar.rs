@@ -73,7 +73,7 @@ pub fn spawn_engine(app: &AppHandle, port: u16, data_dir: &PathBuf) -> Result<Ch
         .sidecar("alphadesk-engine")
         .map_err(|e| e.to_string())
     {
-        let (mut rx, child) = sidecar
+        let (mut rx, _child) = sidecar
             .args([
                 "--port",
                 &port.to_string(),

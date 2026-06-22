@@ -26,19 +26,19 @@ jobs:
           - platform: macos-latest
             args: '--target aarch64-apple-darwin'
             sidecar_triple: aarch64-apple-darwin
-            sidecar_arch: native
+            python_arch: arm64
           - platform: macos-latest
             args: '--target x86_64-apple-darwin'
             sidecar_triple: x86_64-apple-darwin
-            sidecar_arch: x86_64
+            python_arch: x64
           - platform: ubuntu-22.04
             args: ''
             sidecar_triple: x86_64-unknown-linux-gnu
-            sidecar_arch: native
+            python_arch: x64
           - platform: windows-latest
             args: ''
             sidecar_triple: x86_64-pc-windows-msvc
-            sidecar_arch: native
+            python_arch: x64
 
     runs-on: ${{ matrix.platform }}
 
@@ -54,6 +54,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+          architecture: ${{ matrix.python_arch }}
           cache: pip
           cache-dependency-path: engine/requirements-bundle.txt
 
@@ -67,17 +68,11 @@ jobs:
       - name: Setup engine
         shell: bash
         working-directory: engine
-        env:
-          SIDECAR_ARCH: ${{ matrix.sidecar_arch }}
         run: |
           set -euo pipefail
-          ARCH_PREFIX=""
-          if [ "$SIDECAR_ARCH" = "x86_64" ] && [ "$(uname -m)" = "arm64" ]; then
-            echo "Building x86_64 sidecar via Rosetta on Apple Silicon runner"
-            ARCH_PREFIX="arch -x86_64"
-          fi
+          echo "Python arch: $(python -c 'import platform; print(platform.machine())')"
 
-          $ARCH_PREFIX python -m venv .venv
+          python -m venv .venv
           if [ -f .venv/Scripts/activate ]; then
             source .venv/Scripts/activate
           else
@@ -85,7 +80,7 @@ jobs:
           fi
 
           pip install -r requirements-bundle.txt pyinstaller
-          $ARCH_PREFIX pyinstaller alphadesk-engine.spec --noconfirm --clean
+          pyinstaller alphadesk-engine.spec --noconfirm --clean
 
           echo "Sidecar binary arch:"
           file dist/alphadesk-engine* || true

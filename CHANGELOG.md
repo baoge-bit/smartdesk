@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- App icons converted to RGBA PNG (fixes Tauri `generate_context!` build failure on all platforms)
+- macOS x86_64 sidecar: use `setup-python` `architecture: x64` instead of Rosetta `arch` prefix
 - Rust `Emitter` trait imports for Tauri v2 tray and engine-ready events
 - Release CI: Windows bash steps, per-architecture PyInstaller sidecar builds, exclude `longbridge` from bundle deps
 - Committed `Cargo.lock` for reproducible Rust dependency resolution in releases
