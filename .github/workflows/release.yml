@@ -5,9 +5,17 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g. v1.0.0)'
+        required: true
+        default: 'v1.0.0'
 
 permissions:
   contents: write
+
+env:
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
 
 jobs:
   build-tauri:
@@ -142,7 +150,7 @@ jobs:
         id: notes
         shell: bash
         run: |
-          BODY=$(sed "s/{{tag}}/${{ github.ref_name }}/g" .github/release-template.md)
+          BODY=$(sed "s/{{tag}}/${{ env.RELEASE_TAG }}/g" .github/release-template.md)
           echo "body<<EOF" >> "$GITHUB_OUTPUT"
           echo "$BODY" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
@@ -154,8 +162,8 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           projectPath: apps/alphadesk
-          tagName: ${{ github.ref_name }}
-          releaseName: 'AlphaDesk ${{ github.ref_name }}'
+          tagName: ${{ env.RELEASE_TAG }}
+          releaseName: 'AlphaDesk ${{ env.RELEASE_TAG }}'
           releaseBody: ${{ steps.notes.outputs.body }}
           releaseDraft: true
           prerelease: false
