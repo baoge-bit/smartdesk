@@ -51,7 +51,14 @@ elif [[ "$REMOTE_URL" != *"baoge-bit/smartdesk"* ]]; then
   echo "Warning: origin is not baoge-bit/smartdesk ($REMOTE_URL)" >&2
 fi
 
-CURRENT="$(node -p "require('./apps/alphadesk/package.json').version" 2>/dev/null || echo '')"
+read_package_version() {
+  if command -v node >/dev/null 2>&1; then
+    node -p "require('./apps/alphadesk/package.json').version" 2>/dev/null && return
+  fi
+  grep -m1 '"version"' "$ROOT/apps/alphadesk/package.json" | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/'
+}
+
+CURRENT="$(read_package_version || true)"
 if [[ "$CURRENT" != "$VERSION" ]]; then
   echo "Syncing version to $VERSION ..."
   "$ROOT/scripts/bump-version.sh" "$VERSION"
