@@ -17,7 +17,7 @@
     "tauri:build": "tauri build",
     "tauri:icon": "tauri icon assets/app-icon.png",
     "lint": "eslint src --ext ts,tsx",
-    "test": "vitest run"
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",

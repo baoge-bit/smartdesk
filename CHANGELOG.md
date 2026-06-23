@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Windows release CI: commit `icons/icon.ico` required by `tauri-build` for Windows Resource generation
+- macOS x86_64 release CI: set `TAURI_BUNDLER_DMG_IGNORE_CI=false` so DMG bundling skips Finder AppleScript on headless runners
 - App icons converted to RGBA PNG (fixes Tauri `generate_context!` build failure on all platforms)
 - macOS x86_64 sidecar: use `setup-python` `architecture: x64` instead of Rosetta `arch` prefix
 - macOS x86_64 Tauri build: install `x86_64-apple-darwin` Rust target and configure cross-linker

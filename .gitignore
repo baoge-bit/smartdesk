@@ -37,6 +37,7 @@ logs/
 # Tauri
 apps/alphadesk/src-tauri/WixTools/
 apps/alphadesk/src-tauri/gen/
+apps/alphadesk/src-tauri/binaries/
 
 # Release artifacts
 release/

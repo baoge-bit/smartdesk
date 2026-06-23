@@ -169,6 +169,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APPLE_SIGNING_IDENTITY: '-'
+          # tauri-action defaults this to 'true', which disables --skip-jenkins and
+          # makes bundle_dmg.sh run Finder AppleScript that fails on headless CI.
+          TAURI_BUNDLER_DMG_IGNORE_CI: 'false'
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
